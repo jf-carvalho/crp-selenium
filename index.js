@@ -1,16 +1,20 @@
 const { Builder, By, until } = require('selenium-webdriver')
 const chrome = require('selenium-webdriver/chrome')
+const fs = require('fs');
+
+const crp = process.argv[2]
+const dev = process.argv[3]
 
 const options = new chrome.Options()
-options.addArguments('--headless')
+
+if (dev != "dev") {
+    options.addArguments('--headless')
+}
 
 const driver = new Builder()
   .forBrowser('chrome')
   .setChromeOptions(options)
   .build()
-
-
-const crp = process.argv[2]
 
 init(crp)  
 
@@ -20,23 +24,27 @@ async function init(crp) {
 
     await driver.get('https://cadastro.cfp.org.br/')
 
-    sleep(2)
+    await sleep(2)
 
     await clickAdvancedSearchButton()
 
-    sleep(2)
+    await sleep(2)
 
     await setCRPField(crp)
 
-    sleep(2)
+    await sleep(2)
 
     await clickSearchButton()
 
-    sleep(2)
+    const results = JSON.stringify(await getResults())
 
-    const results = await getResults()
+    if (dev != "dev") {
+        driver.quit()
+    }
 
-    driver.quit()
+    fs.writeFileSync('results.json', results);
+
+    return results;
 }
 
 function validateCRP(crp) {
@@ -103,14 +111,30 @@ async function clickSearchButton() {
 async function getResults() {
     try {
         const resultsTable = await driver.wait(
-            until.elementLocated(By.css('#resultados')),
+            until.elementLocated(By.css('.resultados table')),
             15000
         )
+
+        await driver.wait(until.elementIsVisible(resultsTable, 5000))
     
-        // const tableRows = await resultsTable.findElements(By.css('tr'))
+        const tableRows = await resultsTable.findElements(By.css('tbody tr'))
     
-        // console.log(tableRows)
-        console.log(resultsTable)
+        const professionals = [];
+
+        for (const tableRow of tableRows) {
+            const cols = await tableRow.findElements(By.css('td'));
+            const professional = {
+                "status": await cols[0].getText(),
+                "name": await cols[1].getText(),
+                "region": await cols[2].getText(),
+                "registration_number": await cols[3].getText(),
+                "subscription_date": await cols[4].getText()
+            };
+
+            professionals.push(professional);
+        }
+
+        return professionals
     } catch (error) {
         handleError(error)
     }
@@ -121,6 +145,6 @@ async function handleError(error) {
     process.exit()
 }
 
-function sleep(seconds) {
-    new Promise(resolve => setTimeout(resolve, seconds * 1000))
+async function sleep(seconds) {
+    await new Promise(resolve => setTimeout(resolve, seconds * 1000))
 }
