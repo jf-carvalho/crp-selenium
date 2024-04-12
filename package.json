@@ -1,12 +1,9 @@
 {
   "name": "cfp-selenium",
   "version": "1.0.0",
-  "description": "",
+  "description": "JS script with Selenium to search brazilian psychology professionals by their registration number",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "",
+  "author": "João Carvalho",
   "license": "ISC",
   "dependencies": {
     "chromedriver": "^123.0.2",
