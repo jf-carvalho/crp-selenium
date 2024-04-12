@@ -124,11 +124,11 @@ async function getResults() {
         for (const tableRow of tableRows) {
             const cols = await tableRow.findElements(By.css('td'));
             const professional = {
-                "status": await cols[0].getText(),
-                "name": await cols[1].getText(),
-                "region": await cols[2].getText(),
-                "registration_number": await cols[3].getText(),
-                "subscription_date": await cols[4].getText()
+                "status": cols[0] !== undefined ? await cols[0].getText() : "",
+                "name": cols[1] !== undefined ? await cols[1].getText() : "",
+                "region": cols[2] !== undefined ? await cols[2].getText() : "",
+                "registration_number": cols[3] !== undefined ? await cols[3].getText() : "",
+                "subscription_date": cols[4] !== undefined ? await cols[4].getText() : ""
             };
 
             professionals.push(professional);
