@@ -1,3 +1,9 @@
+Requirements:
+- node >= 20.11.17
+- run **npm i**
+
+---
+
 Run with **node index.js {registration number}**
 
 Selenium will run with --headless argument by default. To run headful browser, use: **node index.js {registration number} dev**
