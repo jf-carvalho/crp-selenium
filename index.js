@@ -2,7 +2,7 @@ const { Builder, By, until } = require('selenium-webdriver')
 const chrome = require('selenium-webdriver/chrome')
 
 const options = new chrome.Options()
-// options.addArguments('--headless')
+options.addArguments('--headless')
 
 const driver = new Builder()
   .forBrowser('chrome')
@@ -36,7 +36,7 @@ async function init(crp) {
 
     const results = await getResults()
 
-    // driver.quit()
+    driver.quit()
 }
 
 function validateCRP(crp) {
